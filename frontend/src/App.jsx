@@ -1,14 +1,26 @@
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { Client } from '@stomp/stompjs';
-import { Activity, Play, RefreshCw, ServerCrash, Clock, DollarSign, Database, Terminal } from 'lucide-react';
+import { Activity, Play, RefreshCw, ServerCrash, Clock, DollarSign, Database, Terminal, Settings } from 'lucide-react';
 import './index.css';
 
-const NODES = [
-  { id: 1, port: 8081 },
-  { id: 2, port: 8082 },
-  { id: 3, port: 8083 }
-];
+// Leer configuración de .env.local
+const getNodeConfig = () => {
+  const node1Host = import.meta.env.VITE_NODE_1_HOST || 'localhost';
+  const node1Port = import.meta.env.VITE_NODE_1_PORT || '8081';
+  const node2Host = import.meta.env.VITE_NODE_2_HOST || 'localhost';
+  const node2Port = import.meta.env.VITE_NODE_2_PORT || '8082';
+  const node3Host = import.meta.env.VITE_NODE_3_HOST || 'localhost';
+  const node3Port = import.meta.env.VITE_NODE_3_PORT || '8083';
+
+  return [
+    { id: 1, host: node1Host, port: node1Port },
+    { id: 2, host: node2Host, port: node2Port },
+    { id: 3, host: node3Host, port: node3Port }
+  ];
+};
+
+let NODES = getNodeConfig();
 
 function App() {
   const [nodeStates, setNodeStates] = useState({
@@ -65,17 +77,19 @@ function App() {
 
   const fetchInitialState = async (node) => {
     try {
-      const res = await axios.get(`http://localhost:${node.port}/api/stocks/state`);
+      const url = `http://${node.host}:${node.port}/api/stocks/state`;
+      const res = await axios.get(url);
       updateNodeData(node.id, { connected: true, state: res.data });
     } catch (err) {
-      console.error(`Failed to fetch state for Node ${node.id}`, err);
+      console.error(`Failed to fetch state for Node ${node.id} at http://${node.host}:${node.port}`, err);
       updateNodeData(node.id, { connected: false });
     }
   };
 
   const setupWebSocket = (node) => {
+    const wsUrl = `ws://${node.host}:${node.port}/ws`;
     const client = new Client({
-      brokerURL: `ws://localhost:${node.port}/ws`,
+      brokerURL: wsUrl,
       reconnectDelay: 5000,
       onConnect: () => {
         updateNodeData(node.id, { connected: true });
@@ -118,7 +132,8 @@ function App() {
   const handleBuy = async (nodeId, quantity = 1) => {
     const node = NODES.find(n => n.id === nodeId);
     try {
-      await axios.post(`http://localhost:${node.port}/api/stocks/buy`, {
+      const url = `http://${node.host}:${node.port}/api/stocks/buy`;
+      await axios.post(url, {
         symbol: 'STR',
         quantity
       });
