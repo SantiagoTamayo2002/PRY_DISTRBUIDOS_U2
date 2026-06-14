@@ -1,9 +1,29 @@
 HELP.md
 .gradle
+gradle
 build/
+target/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# Base de datos JSON de los nodos (generados en tiempo de ejecución)
+node*_db.json
+node1_db.json
+node2_db.json
+node3_db.json
+node4_db.json
+node5_db.json
+
+# Logs
+*.log
+logs/
+
+# Maven local cache
+.m2/
+.maven/
 
 ### STS ###
 .apt_generated
