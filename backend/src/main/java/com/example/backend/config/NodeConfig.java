@@ -16,7 +16,7 @@ public class NodeConfig {
     @Getter
     private int myNodeId;
 
-    @Value("${nodes.all:1:8081,2:8082,3:8083}")
+    @Value("${nodes.all:1:localhost:8081,2:localhost:8082,3:localhost:8083}")
     private String nodesAllStr;
 
     @Bean
@@ -25,8 +25,9 @@ public class NodeConfig {
     }
 
     /**
-     * Returns a map of Node ID to Base URL (e.g., 2 -> "http://localhost:8082")
+     * Returns a map of Node ID to Base URL (e.g., 2 -> "http://192.168.1.1:8082")
      * Excludes the current node.
+     * Format: id:host:port (e.g., 1:192.168.1.1:8081,2:192.168.1.2:8081)
      */
     public Map<Integer, String> getOtherNodes() {
         Map<Integer, String> otherNodes = new HashMap<>();
@@ -34,9 +35,10 @@ public class NodeConfig {
         for (String config : nodeConfigs) {
             String[] parts = config.split(":");
             int id = Integer.parseInt(parts[0]);
-            String port = parts[1];
+            String host = parts[1];
+            String port = parts[2];
             if (id != myNodeId) {
-                otherNodes.put(id, "http://localhost:" + port);
+                otherNodes.put(id, "http://" + host + ":" + port);
             }
         }
         return otherNodes;
@@ -44,6 +46,7 @@ public class NodeConfig {
     
     /**
      * Returns a map of Node ID to Base URL for ALL nodes.
+     * Format: id:host:port (e.g., 1:192.168.1.1:8081,2:192.168.1.2:8081)
      */
     public Map<Integer, String> getAllNodes() {
         Map<Integer, String> allNodes = new HashMap<>();
@@ -51,8 +54,9 @@ public class NodeConfig {
         for (String config : nodeConfigs) {
             String[] parts = config.split(":");
             int id = Integer.parseInt(parts[0]);
-            String port = parts[1];
-            allNodes.put(id, "http://localhost:" + port);
+            String host = parts[1];
+            String port = parts[2];
+            allNodes.put(id, "http://" + host + ":" + port);
         }
         return allNodes;
     }

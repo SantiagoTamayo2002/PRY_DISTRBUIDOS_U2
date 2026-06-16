@@ -10,7 +10,7 @@ param(
     [int]$Port,
     
     [Parameter(Mandatory = $false, HelpMessage = "Configuracion de todos los nodos")]
-    [string]$NodesAll = "1:8081,2:8082,3:8083"
+    [string]$NodesAll = ""
 )
 
 Write-Host ""
@@ -19,10 +19,18 @@ Write-Host "Ejecutando Nodo $NodeId" -ForegroundColor Green
 Write-Host "============================================" -ForegroundColor Green
 Write-Host "NODE_ID: $NodeId" -ForegroundColor Yellow
 Write-Host "Puerto:  $Port" -ForegroundColor Yellow
-Write-Host "Nodos:   $NodesAll" -ForegroundColor Yellow
+if ([string]::IsNullOrEmpty($NodesAll)) {
+    Write-Host "Nodos:   (using application.properties defaults)" -ForegroundColor Yellow
+} else {
+    Write-Host "Nodos:   $NodesAll" -ForegroundColor Yellow
+}
 Write-Host ""
 
-$arguments = "--server.port=$Port --node.id=$NodeId --nodes.all=$NodesAll"
+if ([string]::IsNullOrEmpty($NodesAll)) {
+    $arguments = "--server.port=$Port --node.id=$NodeId"
+} else {
+    $arguments = "--server.port=$Port --node.id=$NodeId --nodes.all=$NodesAll"
+}
 
 # Crear archivo .cmd temporal para ejecutar Maven de forma segura
 $cmdFile = "$env:TEMP\node_single_$NodeId.cmd"

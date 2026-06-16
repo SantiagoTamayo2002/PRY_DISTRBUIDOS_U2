@@ -1,10 +1,6 @@
 # 🌐 Configuración del Frontend para Máquinas Distintas
 
-## 📋 Resumen
 
-El frontend está configurado para **automáticamente** conectarse a los nodos en máquinas distintas.
-
----
 
 ## 🎯 CASO 1: LOCALHOST (Misma Máquina)
 
@@ -128,6 +124,7 @@ Frontend: http://<IP-DE-TU-MÁQUINA>:3000
 # VITE_NODE_1_HOST=localhost
 
 # Descomentar las líneas de máquinas distintas
+#
 VITE_NODE_1_HOST=192.168.2.2
 ```
 
